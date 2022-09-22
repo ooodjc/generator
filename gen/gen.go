@@ -22,16 +22,19 @@ func Run() {
 	}
 	db.SingularTable(true)
 
-	var table_infos []module.TableInfo
-	sql := "select COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT from information_schema.COLUMNS where TABLE_SCHEMA = ? and TABLE_NAME = ?"
-	if err = db.Raw(sql, TemplateData.DbName, TemplateData.TableName).Find(&table_infos).Error; err != nil {
-		log.Fatal("查询错误")
-	}
+	//遍历数据表
+	for _, v := range TemplateData.TableNameList {
+		var table_infos []module.TableInfo
+		sql := "select COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT from information_schema.COLUMNS where TABLE_SCHEMA = ? and TABLE_NAME = ?"
+		if err = db.Raw(sql, TemplateData.DbName, v).Find(&table_infos).Error; err != nil {
+			log.Fatal("查询错误")
+		}
 
-	//向模板数据中添加表字段数据
-	TemplateData.StructList = table_infos
-	//生成
-	ByTemplateGeneratorFile(TemplateData)
+		//向模板数据中添加表字段数据
+		TemplateData.StructList = table_infos
+		//生成
+		ByTemplateGeneratorFile(TemplateData, v)
+	}
 }
 
 // 下划线写法转为驼峰写法
@@ -54,7 +57,7 @@ func FormatType(types string) string {
 		return "int32"
 	case "bigint":
 		return "int64"
-	case "date", "timestamp without time zone", "timestamp with ime zone", "timestamp", "datatime", "time":
+	case "date", "timestamp without time zone", "timestamp with ime zone", "timestamp", "datetime", "time":
 		return "time.Time"
 	case "bytea", "binary", "varbinary", "tinyblob", "blob", "mediumblob", "longblob":
 		return "[]byte"
@@ -67,7 +70,8 @@ func FormatType(types string) string {
 }
 
 //按模板生成文件
-func ByTemplateGeneratorFile(data module.TemplateData) bool {
+func ByTemplateGeneratorFile(data module.TemplateData, table_name string) bool {
+	data.TableName = table_name
 	tmpl, err := template.New(data.TemplateFileName).
 		Funcs(template.FuncMap{"Case2Camel": Case2Camel, "FormatType": FormatType}).
 		ParseFiles(data.TemplatePath + data.TemplateFileName)
@@ -75,7 +79,7 @@ func ByTemplateGeneratorFile(data module.TemplateData) bool {
 		log.Println("读取模板文件错误")
 		return false
 	}
-	file, err := os.OpenFile(data.FileSavePath+data.FileSaveName, os.O_CREATE|os.O_WRONLY, 0755)
+	file, err := os.OpenFile(data.FileSavePath+Case2Camel(table_name)+data.FileSaveName, os.O_CREATE|os.O_WRONLY, 0755)
 	if err != nil {
 		log.Println("打开文件错误")
 		return false

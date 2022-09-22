@@ -16,7 +16,8 @@ type TemplateData struct {
 	TemplateFileName string      //模板文件名称
 	FileSavePath     string      //生成文件路径
 	FileSaveName     string      //生成文件名称
-	TableName        string      //表名
+	TableNameList    []string    //表名列表
+	TableName        string      //当前循环表名
 	DbName           string      //数据库名
 }
 

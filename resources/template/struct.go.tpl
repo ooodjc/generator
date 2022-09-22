@@ -1,5 +1,9 @@
 package service
 
+import (
+	"time"
+)
+
 type {{ .TableName | Case2Camel }} struct {
 	{{range .StructList}}
 	{{ .ColumnName | Case2Camel }}	{{ .DataType | FormatType }}	`gorm:"column:{{.ColumnName}}"`

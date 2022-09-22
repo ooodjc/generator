@@ -6,6 +6,8 @@ TemplateData:
   TemplatePath:  ./resources/template/
   TemplateFileName:  struct.go.tpl
   FileSavePath:  ./resources/gen_file/
-  FileSaveName:  demo.go
-  TableName: user_info
+  FileSaveName:  Service.go
+  TableNameList: 
+    - user_info
+    - order_info
   DbName: test

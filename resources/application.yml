@@ -1,0 +1,11 @@
+db:
+  type:  mysql
+  url:  root:123456@(192.168.2.178:3306)/test?charset=utf8&parseTime=true&loc=Local
+
+TemplateData:
+  TemplatePath:  ./resources/template/
+  TemplateFileName:  struct.go.tpl
+  FileSavePath:  ./resources/gen_file/
+  FileSaveName:  demo.go
+  TableName: user_info
+  DbName: test

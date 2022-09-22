@@ -1,7 +1,9 @@
 package main
 
-import "log"
+import (
+	"generator/gen"
+)
 
 func main() {
-	log.Println("Hello World!")
+	gen.Run()
 }
